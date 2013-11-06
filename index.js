@@ -38,7 +38,7 @@ deep.Shell = deep.compose.Classes(deep.BaseChain,  function (options) {
 				if(err)
 					def.reject(err);
 				else if(!stat.isDirectory())
-					def.reject(deep.errors.Internal("deep.shell : cd failed to be executed : not a directory. : "+path));
+					def.reject(deep.errors.Internal("deep.shell : cd failed : not a directory : "+path));
 				else
 				{
 					self._shell.state.cwd = pathUtil.resolve(path);
@@ -136,5 +136,7 @@ deep.shell = function(cwd, env)
 };
 
 exports.shell = deep.shell;
+
+
 
 
