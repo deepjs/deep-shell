@@ -1,6 +1,6 @@
 {
   "name": "deep-shell",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "author": "Gilles Coomans <gilles.coomans@gmail.com>",
   "description": "deepjs promised based shell chain",
   "licenses": [
@@ -11,7 +11,7 @@
     "url":"https://github.com/deepjs/deep-shell.git"
   },
   "dependencies": {
-    "deepjs":">=0.9.5"
+    "deepjs":">=0.9.6"
   },
   "main": "./index.js"
 }
