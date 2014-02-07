@@ -6,6 +6,8 @@ var fs = require('fs');
 var pathUtil = require("path");
 var deep = require("deepjs");
 
+// todo : load deep-node : declare default protocols and clients, add login/logout/test as http client facilities for autobahn apps
+
 function doExec (handler, cmd){
 	var def = deep.Deferred();
 	handler._shell.process = exec(cmd, handler._shell.state, function (error, stdout, stderr) {
