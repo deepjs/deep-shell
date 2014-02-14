@@ -1,0 +1,31 @@
+deep shell should first be used to do asynch shell call.
+
+But we could add json/html/swig clients (and almost all deep libs) in a complete nodejs/deepjs env
+
+- load json config files that gives server connection infos : should use crypted and/or ssh way of connection
+
+- use it as a client to test and use distant server
+	- CRUD  (also html)
+	- launch distant test cases
+	- get logs, stats, etc...
+	- login/logout ...
+
+- create service/server/vm localy
+
+- administrate deployement (git acl)
+
+- send email (use ssmtp)
+
+- do push (comet)
+
+- load/test localy views, routes, etc. (deep-dom)
+
+- deep-elastic : manage index, backup, etc
+
+- deep-git : manage gits
+
+- etc.
+
+
+So it should be the best deepjs friend in a console
+
