@@ -11,10 +11,10 @@ var deep = require("deepjs");
 function doExec (handler, cmd){
 	var def = deep.Deferred();
 	handler._shell.process = exec(cmd, handler._shell.state, function (error, stdout, stderr) {
-		if(error || stderr)
+		if(error)
 			return def.reject(deep.errors.Internal(stderr, error));
 		if(!handler._shell.quiet)
-			console.log("deep.shell : "+cmd+" : ", stdout);
+			console.log(cmd+" : ", stdout);
 		def.resolve(stdout);
 	});
 	return def.promise();

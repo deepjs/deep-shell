@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 require("deep-shell");
-
-
 var repl = require("repl")
 .start({
 	prompt: "node via stdin> ",
