@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+var deep = require("deep");
+require("deep-shell");
+
+
+
+
+var repl = require("repl")
+.start({
+	prompt: "node via stdin> ",
+	input: process.stdin,
+	output: process.stdout
+});
