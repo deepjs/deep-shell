@@ -1,6 +1,6 @@
 {
   "name": "deep-shell",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": "Gilles Coomans <gilles.coomans@gmail.com>",
   "description": "deepjs promised based shell chain",
   "licenses": [
@@ -9,6 +9,9 @@
          "url": "http://www.gnu.org/licenses/lgpl-3.0.txt"
      }
   ],
+  "bin":{
+    "deep-shell":"./bin/deep-shell"
+  },
   "repository": {
     "type":"git",
     "url":"https://github.com/deepjs/deep-shell.git"
