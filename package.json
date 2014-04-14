@@ -1,6 +1,6 @@
 {
   "name": "deep-shell",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "Gilles Coomans <gilles.coomans@gmail.com>",
   "description": "deepjs promised based shell chain",
   "licenses": [
