@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+/**
+ * @author Gilles Coomans <gilles.coomans@gmail.com>
+ */
 require("deep-shell");
 var repl = require("repl")
 .start({
