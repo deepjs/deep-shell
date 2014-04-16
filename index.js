@@ -13,6 +13,9 @@ require("deepjs/lib/stores/collection");
 require("deepjs/lib/stores/object");
 require("deepjs/lib/view");
 
+var pathUtil = require("path"),
+	normalize = pathUtil.normalize;
+
 // todo : load deep-node : declare default protocols and clients, add login/logout/test as http client facilities for autobahn apps
 var addInChain = deep.chain.addInChain;
 function doExec (handler, cmd){
@@ -56,6 +59,9 @@ deep.Shell = deep.compose.Classes(deep.Promise,  function (options) {
 		var self = this;
 		var func = function(s,e){
 			var def = deep.Deferred();
+			if(path[0] !== '/')
+				path = normalize(self._env.state.cwd+"/"+path);
+
 			fs.stat(path, function(err, stat){
 				if(err)
 					def.reject(err);
@@ -130,7 +136,8 @@ deep.Shell = deep.compose.Classes(deep.Promise,  function (options) {
 		if(!options.forEach)
 			options = [options];
 		var func = function(s,e){
-
+			if(path[0] !== '/')
+				path = normalize(self._env.state.cwd+"/"+path);
 			path = path || self._env.state.cwd;
 			var cmd = "ls "+options.join(" ")+" "+path;
 			//console.log("cmd ls  :",cmd);
@@ -162,6 +169,8 @@ deep.Shell = deep.compose.Classes(deep.Promise,  function (options) {
 		if(rf === undefined)
 			rf = false;
 		var func = function(s,e){
+			if(path[0] !== '/')
+				path = normalize(self._env.state.cwd+"/"+path);
 			return doExec(self, "rm " + ((rf)?'-rf ':'') + path);
 		};
 		func._isDone_ = true;
@@ -170,6 +179,8 @@ deep.Shell = deep.compose.Classes(deep.Promise,  function (options) {
 	cat:function(path){
 		var self = this;
 		var func = function(s,e){
+			if(path[0] !== '/')
+				path = normalize(self._env.state.cwd+"/"+path);
 			return doExec(self, "cat " + path);
 		};
 		func._isDone_ = true;
@@ -180,6 +191,8 @@ deep.Shell = deep.compose.Classes(deep.Promise,  function (options) {
 		if(rf === undefined)
 			rf = false;
 		var func = function(s,e){
+			if(path[0] !== '/')
+				path = normalize(self._env.state.cwd+"/"+path);
 			return doExec(self, "touch " + path);
 		};
 		func._isDone_ = true;
@@ -187,12 +200,11 @@ deep.Shell = deep.compose.Classes(deep.Promise,  function (options) {
 	}
 }, require("./fs"));
 
-
-
 deep.Shell.addHandle = function (name, func) {
     deep.Shell.prototype[name] = func;
     return deep.Shell;
 };
+
 deep.shell = deep.sh = function(cwd, env)
 {
 	var handler = new deep.Shell({
@@ -204,7 +216,6 @@ deep.shell = deep.sh = function(cwd, env)
 };
 
 exports.shell = deep.shell;
-
 
 var git = {
 
