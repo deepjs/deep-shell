@@ -3,9 +3,11 @@
  * @author Gilles Coomans <gilles.coomans@gmail.com>
  */
 require("deep-shell");
+deep.sh().log("dpsh").pwd();
+deep.context.cwd = __dirname;
 var repl = require("repl")
 .start({
-	prompt: "node via stdin> ",
+	prompt: "> ",
 	input: process.stdin,
 	output: process.stdout
 });

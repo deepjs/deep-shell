@@ -10,7 +10,7 @@
     }
   ],
   "bin":{
-    "deep-shell":"./bin/deep-shell"
+    "dpsh":"./bin/dpsh"
   },
   "repository": {
     "type":"git",
