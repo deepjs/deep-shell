@@ -49,7 +49,9 @@ var proto = {
 			args = [args];
 		args = ((args && args.length)? args.join(" ") : "");
 		var def = deep.Deferred();
+		//console.log('________________________ execute : ', cmd, args, deep.context.cwd);
 		exec(cmd + " " + args , { env:self._locals.env, cwd:deep.context.cwd }, function (error, stdout, stderr) {
+			//console.log("_____________________________________ EXEC RES : ", error, stdout, stderr)
 			if(error)
 				return def.reject(deep.errors.Internal(stderr, error));
 			if(!self._locals.quiet)
@@ -57,15 +59,6 @@ var proto = {
 			def.resolve(stdout);
 		});
 		return def.promise();
-	},
-	pwd:function(){
-		var self = this;
-		var func = function(s,e){
-			console.log("> pwd \n",deep.context.cwd);
-			return deep.context.cwd;
-		};
-		func._isDone_ = true;
-		return self._enqueue(func);
 	},
 	cd:function(cwd){
 		var self = this;
@@ -76,6 +69,15 @@ var proto = {
 			.done(function(){
 				return s;
 			});
+		};
+		func._isDone_ = true;
+		return self._enqueue(func);
+	},
+	pwd:function(){
+		var self = this;
+		var func = function(s,e){
+			console.log("> pwd\n", deep.context.cwd);
+			return deep.context.cwd;
 		};
 		func._isDone_ = true;
 		return self._enqueue(func);
@@ -234,20 +236,42 @@ module.exports = deep.Shell;
 		options = options || {};
 		this._locals = options;
 		this._identity = deep.SSH;
-		if(options.cwd)
-			this.cd(options.cwd);
+		this._locals.cwd = options.cwd || "~";
 	};
 
 	var proto = {
 		_exec:deep.compose.before(function(cmd, args){
 			args = ((args && args.length)? args.join(" ") : "");
 			cmd = (cmd + " " + args).replace(/\"/g, "\\\"");
+			if(this._locals.cwd !== '~')
+				cmd = "cd "+this._locals.cwd+" && " + cmd;
 			var wrappedCmd = "ssh "+this._locals.user+"@"+this._locals.host;
 			if(this._locals.identityFile)
 				wrappedCmd += ' -i '+ this._locals.identityFile;
 			wrappedCmd += ' "'+cmd+'"';
 			return deep.Arguments([wrappedCmd, []]);
-		})
+		}),
+		cd:function(cwd){
+			var self = this;
+			var func = function(s,e){
+				self._locals.cwd = cwd;
+				return s;
+			};
+			func._isDone_ = true;
+			return self._enqueue(func);
+		},
+		pwd:function(){
+			var self = this;
+			var func = function(s,e){
+				return self._exec( "pwd" )
+				.done(function(s){
+					//console.log("____________________________________________ PWD SSH RS : ", s);
+					self._locals.cwd = s;
+				});
+			};
+			func._isDone_ = true;
+			return self._enqueue(func);
+		}
 	};
 
 	deep.SSH = deep.compose.Classes(deep.Promise, constructor, deep.Shell._aspects.proto, proto);
@@ -273,4 +297,11 @@ deep.sh().rm("test1", true).mkdir("test1").cd("test1").delay(300).log("should be
 deep.sh().rm("test2", true).delay(100).mkdir("test2").cd("test2").log("should be test2").pwd().logError();
 deep.sh().rm("test3", true).mkdir("test3").cd("test3").delay(20).log("should be test3").pwd().logError();
 deep.sh().rm("test4", true).delay(150).mkdir("test4").cd("test4").log("should be test4").pwd().logError();
+
+
+
+
+var d = deep.sh().log("fro local").pwd().ssh({ user:"gcoomans", host:"dev.ubik.be"}).log("from ssh").pwd().close().log("base").pwd()
+
+
 */
