@@ -5,6 +5,9 @@
 require("deep-shell");
 deep.sh().log("dpsh").pwd();
 deep.context.cwd = __dirname;
+
+deep.sh.Protocol("sh");
+
 var repl = require("repl")
 .start({
 	prompt: "> ",
