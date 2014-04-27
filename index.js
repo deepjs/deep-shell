@@ -27,10 +27,19 @@ var normalize = function(path){
 	return path || deep.context.cwd;
 };
 
+deep.sh = deep.sh = function(cwd, env)
+{
+	var handler = new deep.sh.Chain(null, {
+		env:env || process.env
+	});
+	if(cwd)
+		handler.cd(cwd);
+	return handler._start();
+};
 
 var constructor = function (state, options) {
 	options = options || {};
-	this._identity = deep.Shell;
+	this._identity = deep.sh.Chain;
     this._locals = {
 		plateform : deep.globals.plateform,
 		quiet:false,
@@ -108,7 +117,7 @@ var proto = {
 				code:0
 			};
 			if(!self._env.quiet)
-				console.log("deep.shell :", self._env.state.cwd, " : spawn : ", cmd, args);
+				console.log("deep.sh.Chain :", self._env.state.cwd, " : spawn : ", cmd, args);
 			cmder.stdout.on('data', function (data) {
 				if(!self._env.quiet)
 					console.log('stdout: ', data.toString());
@@ -151,7 +160,7 @@ var proto = {
 	echo:function(arg){
 		var self = this;
 		var func = function(s,e){
-			//console.log("echo \n",arg);
+			// console.log(" SH echo \n",arg);
 			return self._exec( "echo "+String(arg || s));
 		};
 		func._isDone_ = true;
@@ -200,42 +209,58 @@ var proto = {
 	}
 };
 
-deep.Shell = deep.compose.Classes(deep.Promise, constructor, proto, FSChain._aspects.proto);
+deep.sh.Chain = deep.compose.Classes(deep.Promise, constructor, proto, FSChain._aspects.proto);
 
-deep.Shell._aspects = {
+deep.sh.Chain._aspects = {
 	constructor:constructor,
 	proto:proto
 };
 
 deep.Promise.API.sh = function(cwd) {
-    var handler = new deep.Shell(this._state, { cwd:cwd });
+    var handler = new deep.sh.Chain(this._state, { cwd:cwd });
     self._enqueue(handler);
     return handler;
 };
 
-deep.Shell.addHandle = function (name, func) {
-    deep.Shell.prototype[name] = func;
-    return deep.Shell;
+deep.sh.Chain.addHandle = function (name, func) {
+    deep.sh.Chain.prototype[name] = func;
+    return deep.sh.Chain;
 };
 
-deep.sh = deep.sh = function(cwd, env)
-{
-	var handler = new deep.Shell(null, {
-		env:env || process.env
+deep.sh.Protocol = function(name, options){
+	return deep.protocol(name,{
+		protocol:name,
+		get:function(request, opt){
+			var methodIndex = request.indexOf(" "), method, args;
+			if(methodIndex > -1)
+			{
+				method = request.substring(0,methodIndex);
+				args = request.substring(methodIndex+1);
+			}
+			// console.log("______________ sh protoc : get : ", name, request, opt, "_____"+ method +"_"+ args);
+			var handler = new deep.sh.Chain(null, options);
+			if(method && handler[method])
+				handler[method](args);
+			else
+				handler.exec(request);
+			return handler._start();
+		}
 	});
-	if(cwd)
-		handler.cd(cwd);
-	return handler._start();
 };
 
-module.exports = deep.Shell;
-
+module.exports = deep.sh.Chain;
 
 (function(){
+
+	deep.ssh = function(options)
+	{
+		return new deep.ssh.Chain.Chain(null, options)._start();
+	};
+
 	var constructor = function(state, options){
 		options = options || {};
 		this._locals = options;
-		this._identity = deep.SSH;
+		this._identity = deep.ssh.Chain;
 		this._locals.cwd = options.cwd || "~";
 	};
 
@@ -265,7 +290,7 @@ module.exports = deep.Shell;
 			var func = function(s,e){
 				return self._exec( "pwd" )
 				.done(function(s){
-					//console.log("____________________________________________ PWD SSH RS : ", s);
+					//console.log("____________________________________________ PWD SSH RES : ", s);
 					self._locals.cwd = s;
 				});
 			};
@@ -274,23 +299,40 @@ module.exports = deep.Shell;
 		}
 	};
 
-	deep.SSH = deep.compose.Classes(deep.Promise, constructor, deep.Shell._aspects.proto, proto);
+	deep.ssh.Chain = deep.compose.Classes(deep.Promise, constructor, deep.sh.Chain._aspects.proto, proto);
 
-	deep.SSH._aspects = {
+	deep.ssh.Chain._aspects = {
 		constructor:constructor,
 		proto:proto
 	};
 
 	deep.Promise.API.ssh = function(options) {
-	    var handler = new deep.SSH(this._state, options);
+	    var handler = new deep.ssh.Chain(this._state, options);
 	    this._enqueue(handler);
 	    return handler;
 	};
 
-	deep.ssh = function(options)
-	{
-		return new deep.SSH(null, options)._start();
+	deep.ssh.Protocol = function(name, options){
+		return deep.protocol(name,{
+			protocol:name,
+			get:function(request, opt){
+				// console.log("______________ ssh protoc : get : ", name, request, opt);
+				var methodIndex = request.indexOf(" "), method, args;
+				if(methodIndex > -1)
+				{
+					method = request.substring(0,methodIndex);
+					args = request.substring(methodIndex);
+				}
+				var handler = new deep.ssh.Chain(null, options);
+				if(method && handler[method])
+					handler[method](args);
+				else
+					handler.exec(request);
+				return handler._start();
+			}
+		});
 	};
+
 })();
 /*
 deep.sh().rm("test1", true).mkdir("test1").cd("test1").delay(300).log("should be test1").pwd().logError();
@@ -299,9 +341,6 @@ deep.sh().rm("test3", true).mkdir("test3").cd("test3").delay(20).log("should be 
 deep.sh().rm("test4", true).delay(150).mkdir("test4").cd("test4").log("should be test4").pwd().logError();
 
 
-
-
-var d = deep.sh().log("fro local").pwd().ssh({ user:"gcoomans", host:"dev.ubik.be"}).log("from ssh").pwd().close().log("base").pwd()
-
+var d = deep.sh().pwd().ssh({ user:"gcoomans", host:"dev.ubik.be"}).pwd().close().pwd()
 
 */
