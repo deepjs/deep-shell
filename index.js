@@ -341,6 +341,6 @@ deep.sh().rm("test3", true).mkdir("test3").cd("test3").delay(20).log("should be 
 deep.sh().rm("test4", true).delay(150).mkdir("test4").cd("test4").log("should be test4").pwd().logError();
 
 
-var d = deep.sh().pwd().ssh({ user:"gcoomans", host:"dev.ubik.be"}).pwd().close().pwd()
+var d = deep.sh().pwd().ssh({ user:"gcoomans", host:"dev.bloup.be"}).pwd().close().pwd()
 
 */
