@@ -17,83 +17,88 @@ var FSChain = require("deep-node/lib/chains/fs");
 var FileChain = require("deep-node/lib/chains/file");
 
 deep.globals.plateform = deep.globals.plateform || (os.type().match(/^Win/) ? 'win' : 'unix');
-deep.globals.rootPath = deep.globals.rootPath || __dirname;
+deep.globals.rootPath = deep.globals.rootPath ||  __dirname;
 deep.context.cwd = deep.context.cwd || deep.globals.rootPath;
 
 var pathUtil = require("path");
-var normalize = function(path){
-	if(path && path[0] !== '/')
-		path = pathUtil.normalize(deep.context.cwd+"/"+path);
+var normalize = function(path) {
+	if (path && path[0] !== '/')
+		path = pathUtil.normalize(deep.context.cwd + "/" + path);
 	return path || deep.context.cwd;
 };
 
-deep.sh = deep.sh = function(cwd, env)
-{
+deep.sh = deep.sh = function(options) {
+	options = options || {};
 	var handler = new deep.sh.Chain(null, {
-		env:env || process.env
+		env: options.env || process.env
 	});
-	if(cwd)
-		handler.cd(cwd);
+	if (options.cwd)
+		handler.cd(options.cwd);
 	return handler._start();
 };
 
-var constructor = function (state, options) {
+var constructor = function(state, options) {
 	options = options || {};
 	this._identity = deep.sh.Chain;
-    this._locals = {
-		plateform : deep.globals.plateform,
-		quiet:false,
+	this._locals = {
+		plateform: deep.globals.plateform,
+		quiet: false,
 		env: options.env || process.env
-    };
-    if(options.cwd)
-    	this.cd(options.cwd);
+	};
+	if (options.cwd)
+		this.cd(options.cwd);
 };
 var proto = {
 	/**
-	* private exec
-	*/
-	_exec: function(cmd, args){
+	 * private exec
+	 */
+	_exec: function(cmd, args) {
 		var self = this;
-		if(args && !args.forEach)
+		if (args && !args.forEach)
 			args = [args];
-		args = ((args && args.length)? args.join(" ") : "");
+		args = ((args && args.length) ? args.join(" ") : "");
 		var def = deep.Deferred();
 		//console.log('________________________ execute : ', cmd, args, deep.context.cwd);
-		exec(cmd + " " + args , { env:self._locals.env, cwd:deep.context.cwd }, function (error, stdout, stderr) {
+		exec(cmd + " " + args, {
+			env: self._locals.env,
+			cwd: deep.context.cwd
+		}, function(error, stdout, stderr) {
 			//console.log("_____________________________________ EXEC RES : ", error, stdout, stderr)
-			if(error)
+			if (deep.sh.verbose)
+				console.log(cmd + "\n", error || stdout ||  stderr);
+			if (error)
 				return def.reject(deep.errors.Internal(stderr, error));
-			if(!self._locals.quiet)
-				console.log(cmd+"\n", stdout || stderr);
+			
 			def.resolve(stdout);
 		});
 		return def.promise();
 	},
-	cd:function(cwd){
+	cd: function(cwd) {
 		var self = this;
-		var func = function(s,e){
-			cwd =  normalize(cwd);
-			self.context("cwd", pathUtil.resolve(cwd))
+		var func = function(s, e) {
+			cwd = normalize(cwd);
+			self.toContext("cwd", pathUtil.resolve(cwd))
 			.exists(".", true)
-			.done(function(){
+			.done(function() {
 				return s;
 			});
 		};
 		func._isDone_ = true;
 		return self._enqueue(func);
 	},
-	pwd:function(){
+	pwd: function() {
 		var self = this;
-		var func = function(s,e){
-			console.log("> pwd\n", deep.context.cwd);
+		var func = function(s, e) {
+			if (deep.sh.verbose)
+				console.log('pwd \n '+deep.context.cwd);
 			return deep.context.cwd;
 		};
 		func._isDone_ = true;
 		return self._enqueue(func);
 	},
-	exec:function(cmd, args){
+	exec: function(cmd, args) {
 		var self = this;
-		var func = function(s,e){
+		var func = function(s, e) {
 			if (typeof args === 'undefined')
 				args = [];
 			return self._exec(cmd, args);
@@ -145,101 +150,113 @@ var proto = {
 		func._isDone_ = true;
 		return self._enqueue(func);
 	},*/
-	ls:function(path, options){
+	ls: function(path, options) {
 		var self = this;
 		options = options || ["-lah"];
-		if(!options.forEach)
+		if (!options.forEach)
 			options = [options];
-		var func = function(s,e){
-			path = normalize(path);
-			return self._exec( "ls "+options.join(" ")+" "+path);
+		var func = function(s, e) {
+			//path = normalize(path);
+			options.push(path);
+			return self._exec("ls", options);
 		};
 		func._isDone_ = true;
 		return self._enqueue(func);
 	},
-	echo:function(arg){
+	echo: function(arg) {
 		var self = this;
-		var func = function(s,e){
+		var func = function(s, e) {
 			// console.log(" SH echo \n",arg);
-			return self._exec( "echo "+String(arg || s));
+			return self._exec("echo", String(arg || s));
 		};
 		func._isDone_ = true;
 		return self._enqueue(func);
 	},
-	mkdir:function(name, p){
+	mkdir: function(name, p) {
 		var self = this;
-		if(p === undefined)
+		if (p === undefined)
 			p = true;
-		var func = function(s,e){
-			return self._exec( "mkdir "+((p)?'-p ':'')+name);
+		var func = function(s, e) {
+			return self._exec("mkdir", ((p) ? '-p ' : '') + name)
+			.done(function(sc){
+				return s || sc;
+			});
 		};
 		func._isDone_ = true;
 		return self._enqueue(func);
 	},
-	rm:function(path, rf){
+	rm: function(path, rf) {
 		var self = this;
-		if(rf === undefined)
+		if (rf === undefined)
 			rf = false;
-		var func = function(s,e){
-			path = normalize(path);
-			return self._exec( "rm " + ((rf)?'-rf ':'') + path);
+		var func = function(s, e) {
+			//path = normalize(path);
+			return self._exec("rm", ((rf) ? '-rf ' : '') + path)
+			.done(function(sc){
+				return s || sc;
+			});
 		};
 		func._isDone_ = true;
 		return self._enqueue(func);
 	},
-	cat:function(path){
+	cat: function(path) {
 		var self = this;
-		var func = function(s,e){
-			path = normalize(path);
-			return self._exec( "cat " + path);
+		var func = function(s, e) {
+			//path = normalize(path);
+			return self._exec("cat", path);
 		};
 		func._isDone_ = true;
 		return self._enqueue(func);
 	},
-	touch:function(path){
+	touch: function(path) {
 		var self = this;
-		if(rf === undefined)
+		if (rf === undefined)
 			rf = false;
-		var func = function(s,e){
-			path = normalize(path);
-			return self._exec( "touch " + path);
+		var func = function(s, e) {
+			//path = normalize(path);
+			return self._exec("touch", path)
+			.done(function(sc){
+				return s || sc;
+			});
 		};
 		func._isDone_ = true;
 		return self._enqueue(func);
 	}
 };
 
-deep.sh.Chain = deep.compose.Classes(deep.Promise, constructor, proto, FSChain._aspects.proto);
+deep.sh.Chain = deep.compose.Classes(deep.Promise, constructor, proto);
 
 deep.sh.Chain._aspects = {
-	constructor:constructor,
-	proto:proto
+	constructor: constructor,
+	proto: proto
 };
 
 deep.Promise.API.sh = function(cwd) {
-    var handler = new deep.sh.Chain(this._state, { cwd:cwd });
-    self._enqueue(handler);
-    return handler;
+	var handler = new deep.sh.Chain(this._state, {
+		cwd: cwd
+	});
+	self._enqueue(handler);
+	return handler;
 };
 
-deep.sh.Chain.addHandle = function (name, func) {
-    deep.sh.Chain.prototype[name] = func;
-    return deep.sh.Chain;
+deep.sh.Chain.addHandle = function(name, func) {
+	deep.sh.Chain.prototype[name] = func;
+	return deep.sh.Chain;
 };
 
-deep.sh.Protocol = function(name, options){
-	return deep.protocol(name,{
-		protocol:name,
-		get:function(request, opt){
-			var methodIndex = request.indexOf(" "), method, args;
-			if(methodIndex > -1)
-			{
-				method = request.substring(0,methodIndex);
-				args = request.substring(methodIndex+1);
+deep.sh.Protocol = function(name, options) {
+	return deep.protocol(name, {
+		protocol: name,
+		get: function(request, opt) {
+			var methodIndex = request.indexOf(" "),
+				method, args;
+			if (methodIndex > -1) {
+				method = request.substring(0, methodIndex);
+				args = request.substring(methodIndex + 1);
 			}
 			// console.log("______________ sh protoc : get : ", name, request, opt, "_____"+ method +"_"+ args);
 			var handler = new deep.sh.Chain(null, options);
-			if(method && handler[method])
+			if (method && handler[method])
 				handler[method](args);
 			else
 				handler.exec(request);
@@ -250,49 +267,48 @@ deep.sh.Protocol = function(name, options){
 
 module.exports = deep.sh.Chain;
 
-(function(){
+(function() {
 
-	deep.ssh = function(options)
-	{
-		return new deep.ssh.Chain.Chain(null, options)._start();
+	deep.ssh = function(options) {
+		return new deep.ssh.Chain(null, options)._start();
 	};
 
-	var constructor = function(state, options){
-		options = options || {};
+	var constructor = function(state, options) {
+		options = options ||  {};
 		this._locals = options;
 		this._identity = deep.ssh.Chain;
 		this._locals.cwd = options.cwd || "~";
 	};
 
 	var proto = {
-		_exec:deep.compose.before(function(cmd, args){
-			args = ((args && args.length)? args.join(" ") : "");
+		_exec: deep.compose.before(function(cmd, args) {
+			args = ((args && args.length) ? args.join(" ") : "");
 			cmd = (cmd + " " + args).replace(/\"/g, "\\\"");
-			if(this._locals.cwd !== '~')
-				cmd = "cd "+this._locals.cwd+" && " + cmd;
-			var wrappedCmd = "ssh "+this._locals.user+"@"+this._locals.host;
-			if(this._locals.identityFile)
-				wrappedCmd += ' -i '+ this._locals.identityFile;
-			wrappedCmd += ' "'+cmd+'"';
+			if (this._locals.cwd !== '~')
+				cmd = "cd " + this._locals.cwd + " && " + cmd;
+			var wrappedCmd = "ssh " + this._locals.user + "@" + this._locals.host;
+			if (this._locals.identityFile)
+				wrappedCmd += ' -i ' + this._locals.identityFile;
+			wrappedCmd += ' "' + cmd + '"';
 			return deep.Arguments([wrappedCmd, []]);
 		}),
-		cd:function(cwd){
+		cd: function(cwd) {
 			var self = this;
-			var func = function(s,e){
+			var func = function(s, e) {
 				self._locals.cwd = cwd;
 				return s;
 			};
 			func._isDone_ = true;
 			return self._enqueue(func);
 		},
-		pwd:function(){
+		pwd: function() {
 			var self = this;
-			var func = function(s,e){
-				return self._exec( "pwd" )
-				.done(function(s){
-					//console.log("____________________________________________ PWD SSH RES : ", s);
-					self._locals.cwd = s;
-				});
+			var func = function(s, e) {
+				return self._exec("pwd")
+					.done(function(s) {
+						//console.log("____________________________________________ PWD SSH RES : ", s);
+						self._locals.cwd = s;
+					});
 			};
 			func._isDone_ = true;
 			return self._enqueue(func);
@@ -302,29 +318,29 @@ module.exports = deep.sh.Chain;
 	deep.ssh.Chain = deep.compose.Classes(deep.Promise, constructor, deep.sh.Chain._aspects.proto, proto);
 
 	deep.ssh.Chain._aspects = {
-		constructor:constructor,
-		proto:proto
+		constructor: constructor,
+		proto: proto
 	};
 
 	deep.Promise.API.ssh = function(options) {
-	    var handler = new deep.ssh.Chain(this._state, options);
-	    this._enqueue(handler);
-	    return handler;
+		var handler = new deep.ssh.Chain(this._state, options);
+		this._enqueue(handler);
+		return handler;
 	};
 
-	deep.ssh.Protocol = function(name, options){
-		return deep.protocol(name,{
-			protocol:name,
-			get:function(request, opt){
+	deep.ssh.Protocol = function(name, options) {
+		return deep.protocol(name, {
+			protocol: name,
+			get: function(request, opt) {
 				// console.log("______________ ssh protoc : get : ", name, request, opt);
-				var methodIndex = request.indexOf(" "), method, args;
-				if(methodIndex > -1)
-				{
-					method = request.substring(0,methodIndex);
-					args = request.substring(methodIndex);
+				var methodIndex = request.indexOf(" "),
+					method, args;
+				if (methodIndex > -1) {
+					method = request.substring(0, methodIndex);
+					args = request.substring(methodIndex+1);
 				}
 				var handler = new deep.ssh.Chain(null, options);
-				if(method && handler[method])
+				if (method && handler[method])
 					handler[method](args);
 				else
 					handler.exec(request);
@@ -340,7 +356,7 @@ deep.sh().rm("test2", true).delay(100).mkdir("test2").cd("test2").log("should be
 deep.sh().rm("test3", true).mkdir("test3").cd("test3").delay(20).log("should be test3").pwd().logError();
 deep.sh().rm("test4", true).delay(150).mkdir("test4").cd("test4").log("should be test4").pwd().logError();
 
-
 var d = deep.sh().pwd().ssh({ user:"gcoomans", host:"dev.bloup.be"}).pwd().close().pwd()
-
+var d = deep.ssh({ user:"gcoomans", host:"dev.bloup.be"}).cd("..").ls().log()
+var d = deep.get("sh::echo $PATH").log()
 */
