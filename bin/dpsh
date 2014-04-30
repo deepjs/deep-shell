@@ -7,6 +7,9 @@ deep.sh().log("dpsh").pwd();
 deep.context.cwd = __dirname;
 
 deep.sh.Protocol("sh");
+deep.fs.Protocol("fs");
+
+deep.sh.verbose = true;
 
 var repl = require("repl")
 .start({
