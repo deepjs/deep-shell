@@ -156,7 +156,6 @@ var proto = {
 		if (!options.forEach)
 			options = [options];
 		var func = function(s, e) {
-			//path = normalize(path);
 			options.push(path);
 			return self._exec("ls", options);
 		};
@@ -179,7 +178,7 @@ var proto = {
 		var func = function(s, e) {
 			return self._exec("mkdir", ((p) ? '-p ' : '') + name)
 			.done(function(sc){
-				return s || sc;
+				return s;
 			});
 		};
 		func._isDone_ = true;
@@ -193,7 +192,7 @@ var proto = {
 			//path = normalize(path);
 			return self._exec("rm", ((rf) ? '-rf ' : '') + path)
 			.done(function(sc){
-				return s || sc;
+				return s;
 			});
 		};
 		func._isDone_ = true;
@@ -216,7 +215,7 @@ var proto = {
 			//path = normalize(path);
 			return self._exec("touch", path)
 			.done(function(sc){
-				return s || sc;
+				return s;
 			});
 		};
 		func._isDone_ = true;
