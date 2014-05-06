@@ -350,10 +350,10 @@ module.exports = deep.sh.Chain;
 
 })();
 /*
-deep.sh().rm("test1", true).mkdir("test1").cd("test1").delay(300).log("should be test1").pwd().logError();
-deep.sh().rm("test2", true).delay(100).mkdir("test2").cd("test2").log("should be test2").pwd().logError();
-deep.sh().rm("test3", true).mkdir("test3").cd("test3").delay(20).log("should be test3").pwd().logError();
-deep.sh().rm("test4", true).delay(150).mkdir("test4").cd("test4").log("should be test4").pwd().logError();
+deep.sh().rm("test1", true).mkdir("test1").cd("test1").delay(300).log("should be test1").pwd().elog();
+deep.sh().rm("test2", true).delay(100).mkdir("test2").cd("test2").log("should be test2").pwd().elog();
+deep.sh().rm("test3", true).mkdir("test3").cd("test3").delay(20).log("should be test3").pwd().elog();
+deep.sh().rm("test4", true).delay(150).mkdir("test4").cd("test4").log("should be test4").pwd().elog();
 
 var d = deep.sh().pwd().ssh({ user:"gcoomans", host:"dev.bloup.be"}).pwd().close().pwd()
 var d = deep.ssh({ user:"gcoomans", host:"dev.bloup.be"}).cd("..").ls().log()
