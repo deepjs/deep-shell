@@ -10,21 +10,21 @@ var deep = require("deepjs");
 
 require("deepjs/lib/unit");
 require("deepjs/lib/schema");
-require("deepjs/lib/stores/collection");
-require("deepjs/lib/stores/object");
+require("deep-restful/lib/collection");
+require("deep-restful/lib/object");
 require("deepjs/lib/view");
 var FSChain = require("deep-node/lib/chains/fs");
 var FileChain = require("deep-node/lib/chains/file");
 
 deep.globals.plateform = deep.globals.plateform || (os.type().match(/^Win/) ? 'win' : 'unix');
 deep.globals.rootPath = deep.globals.rootPath ||  __dirname;
-deep.context.cwd = deep.context.cwd || deep.globals.rootPath;
+deep.Promise.context.cwd = deep.Promise.context.cwd || deep.globals.rootPath;
 
 var pathUtil = require("path");
 var normalize = function(path) {
 	if (path && path[0] !== '/')
-		path = pathUtil.normalize(deep.context.cwd + "/" + path);
-	return path || deep.context.cwd;
+		path = pathUtil.normalize(deep.Promise.context.cwd + "/" + path);
+	return path || deep.Promise.context.cwd;
 };
 
 deep.sh = deep.sh = function(options) {
@@ -34,7 +34,7 @@ deep.sh = deep.sh = function(options) {
 	});
 	if (options.cwd)
 		handler.cd(options.cwd);
-	return handler._start();
+	return handler.resolve();
 };
 
 var constructor = function(state, options) {
@@ -58,10 +58,10 @@ var proto = {
 			args = [args];
 		args = ((args && args.length) ? args.join(" ") : "");
 		var def = deep.Deferred();
-		//console.log('________________________ execute : ', cmd, args, deep.context.cwd);
+		//console.log('________________________ execute : ', cmd, args, deep.Promise.context.cwd);
 		exec(cmd + " " + args, {
 			env: self._locals.env,
-			cwd: deep.context.cwd
+			cwd: deep.Promise.context.cwd
 		}, function(error, stdout, stderr) {
 			//console.log("_____________________________________ EXEC RES : ", error, stdout, stderr)
 			if (deep.sh.verbose)
@@ -90,8 +90,8 @@ var proto = {
 		var self = this;
 		var func = function(s, e) {
 			if (deep.sh.verbose)
-				console.log('pwd \n '+deep.context.cwd);
-			return deep.context.cwd;
+				console.log('pwd \n '+deep.Promise.context.cwd);
+			return deep.Promise.context.cwd;
 		};
 		func._isDone_ = true;
 		return self._enqueue(func);
@@ -259,7 +259,7 @@ deep.sh.Protocol = function(name, options) {
 				handler[method](args);
 			else
 				handler.exec(request);
-			return handler._start();
+			return handler.resolve();
 		}
 	});
 };
@@ -269,7 +269,7 @@ module.exports = deep.sh.Chain;
 (function() {
 
 	deep.ssh = function(options) {
-		return new deep.ssh.Chain(null, options)._start();
+		return new deep.ssh.Chain(null, options).resolve();
 	};
 
 	var constructor = function(state, options) {
@@ -343,7 +343,7 @@ module.exports = deep.sh.Chain;
 					handler[method](args);
 				else
 					handler.exec(request);
-				return handler._start();
+				return handler.resolve();
 			}
 		});
 	};

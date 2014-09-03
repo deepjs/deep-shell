@@ -4,7 +4,7 @@
  */
 require("deep-shell");
 deep.sh().log("dpsh").pwd();
-deep.context.cwd = __dirname;
+deep.Promise.context.cwd = __dirname;
 
 deep.sh.Protocol("sh");
 deep.fs.Protocol("fs");
