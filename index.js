@@ -12,7 +12,7 @@ require("deepjs/lib/unit");
 require("deepjs/lib/schema");
 require("deep-restful/lib/collection");
 require("deep-restful/lib/object");
-require("deepjs/lib/view");
+require("deep-views/lib/view");
 var FSChain = require("deep-node/lib/chains/fs");
 var FileChain = require("deep-node/lib/chains/file");
 
@@ -234,7 +234,7 @@ deep.Promise.API.sh = function(cwd) {
 	var handler = new deep.sh.Chain(this._state, {
 		cwd: cwd
 	});
-	self._enqueue(handler);
+	this._enqueue(handler);
 	return handler;
 };
 

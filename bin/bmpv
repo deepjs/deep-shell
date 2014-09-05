@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+/**
+ * @author Gilles Coomans <gilles.coomans@gmail.com>
+ */
+var deep = require("deepjs");
+var handler = require("deep-shell/lib/bump-version");
+deep.Promise.context.cwd = __dirname;
+deep.sh.verbose = true;
+var args = process.argv.slice(2);
+handler.bumpVersion(args[0], args[1] || __dirname);
+/*
+var repl = require("repl")
+.start({
+	prompt: "> ",
+	input: process.stdin,
+	output: process.stdout
+});
+*/

@@ -1,23 +1,23 @@
 {
-  "name": "deep-shell",
-  "version": "0.3.0",
-  "author": "Gilles Coomans <gilles.coomans@gmail.com>",
-  "description": "deepjs promised based shell chain",
-  "licenses": [
-    {
-         "type": "LGPLv3.0",
-         "url": "http://www.gnu.org/licenses/lgpl-3.0.txt"
-    }
-  ],
-  "bin":{
-    "dpsh":"./bin/dpsh"
-  },
-  "repository": {
-    "type":"git",
-    "url":"https://github.com/deepjs/deep-shell.git"
-  },
-  "dependencies": {
-    "deepjs":">=0.13.1"
-  },
-  "main": "./index.js"
+ "name": "deep-shell",
+ "version": "0.3.1",
+ "author": "Gilles Coomans <gilles.coomans@gmail.com>",
+ "description": "deepjs promised based shell chain",
+ "licenses": [
+  {
+   "type": "LGPLv3.0",
+   "url": "http://www.gnu.org/licenses/lgpl-3.0.txt"
+  }
+ ],
+ "bin": {
+  "dpsh": "./bin/dpsh"
+ },
+ "repository": {
+  "type": "git",
+  "url": "https://github.com/deepjs/deep-shell.git"
+ },
+ "dependencies": {
+  "deepjs": ">=0.13.1"
+ },
+ "main": "./index.js"
 }
