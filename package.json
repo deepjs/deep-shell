@@ -19,10 +19,16 @@
  },
  "dependencies": {
   "amdefine": "*",
+  "cheerio": "0.13.1",
   "deepjs": ">=0.13.1",
   "deep-restful": ">=0.2.2",
   "deep-views": ">=0.2.0",
-  "deep-node": ">=0.3.1"
+  "deep-node": ">=0.3.1",
+  "deep-mongo": ">=0.6.0",
+  "deep-routes": ">=0.3.4",
+  "deep-swig": ">=0.5.1",
+  "deep-jquery": ">=0.3.0",
+  "deep-marked": ">=0.2.3"
  },
  "main": "./index.js"
 }

@@ -10,9 +10,17 @@ var deep = require("deepjs");
 
 require("deepjs/lib/unit");
 require("deepjs/lib/schema");
+require("deep-restful");
 require("deep-restful/lib/collection");
 require("deep-restful/lib/object");
-require("deep-views/lib/view");
+require("deep-views");
+require("deep-routes");
+require("deep-jquery/lib/dom")("dom");
+require("deep-mongo");
+require("deep-swig/lib/nodejs");
+require("deep-marked");
+require("deep-marked/lib/clients/nodejs");
+
 var FSChain = require("deep-node/lib/chains/fs");
 var FileChain = require("deep-node/lib/chains/file");
 
