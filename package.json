@@ -1,6 +1,6 @@
 {
  "name": "deep-shell",
- "version": "0.4.2",
+ "version": "0.4.3",
  "author": "Gilles Coomans <gilles.coomans@gmail.com>",
  "description": "deepjs promised based shell chain",
  "licenses": [
@@ -20,7 +20,7 @@
  "dependencies": {
   "amdefine": "*",
   "deepjs": ">=0.13.1",
-  "deep-restful": "0.2.2",
+  "deep-restful": ">=0.2.2",
   "deep-views": ">=0.2.0",
   "deep-node": ">=0.3.1"
  },
