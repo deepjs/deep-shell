@@ -1,8 +1,6 @@
 deep shell should first be used to do asynch shell call.
 
-But we could add json/html/swig clients (and almost all deep libs) in a complete nodejs/deepjs env
 
-- load json config files that gives server connection infos : should use crypted and/or ssh way of connection
 
 - use it as a client to test and use distant server
 	- CRUD  (also html)
@@ -13,8 +11,6 @@ But we could add json/html/swig clients (and almost all deep libs) in a complete
 - create service/server/vm localy
 
 - administrate deployement (git acl)
-
-- send email (use ssmtp)
 
 - do push (comet)
 
@@ -27,5 +23,18 @@ But we could add json/html/swig clients (and almost all deep libs) in a complete
 - etc.
 
 
-So it should be the best deepjs friend in a console
+
+
+
+
+So it should be the best deepjs friend in a console.
+
+
+
+
+todo : 
+
+add deep-mongo, deep-jquery/cheerio, deep-routes, deep-swig, deep-marked as dependencies
+and deep-restful/index for chain
+
 
