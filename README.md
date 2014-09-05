@@ -19,7 +19,8 @@ deep.sh(".")
 ## install
 
 
-globally, to have access to dpsh (cli env with deep-shell, deep-restful, deep-views and deep-node loaded)
+### globally
+To have access to dpsh (cli env with deep-shell, deep-restful, deep-views and deep-node loaded) :
 ```
 > npm install -g deep-shell
 ```
@@ -40,4 +41,21 @@ example of script in `deep-shell/bin/bmpv` that bump package.json version, updat
 > cd your/git/npm/module
 > bmpv minor
 ```
+
+## locally
+
+```
+> npm install deep-shell
+```
+
+```javascript
+var deep = require("deepjs");
+require("deep-shell");
+deep.sh(".").pwd()...fs("...").from("...")...elog();
+```
+
+
+
+
+
 
