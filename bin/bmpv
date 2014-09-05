@@ -1,18 +1,46 @@
 #!/usr/bin/env node
+
 /**
  * @author Gilles Coomans <gilles.coomans@gmail.com>
  */
-var deep = require("deepjs");
-var handler = require("deep-shell/lib/bump-version");
-deep.Promise.context.cwd = __dirname;
+var deep = require("deep-shell"); // deep.sh + deep.fs + more
+deep.context("cwd", __dirname);
 deep.sh.verbose = true;
 var args = process.argv.slice(2);
-handler.bumpVersion(args[0], args[1] || __dirname);
-/*
-var repl = require("repl")
-.start({
-	prompt: "> ",
-	input: process.stdin,
-	output: process.stdout
-});
-*/
+
+(function(type, path) {
+	var tag;
+	return deep.fs(path)
+	.pwd()
+	.log("bump version : ", type)
+	.from("package.json")
+	.done(function(pck) {
+		tag = pck.version.split(".");
+		switch (type) {
+			case "major":
+				tag = (parseInt(tag[0], 10) + 1) + ".0.0";
+				break;
+			case "revision":
+				tag = tag[0] + "." + ( parseInt(tag[1], 10) + 1 ) + ".0";
+				break;
+			default:
+				tag = tag[0] + "." + tag[1] + "." + ( parseInt(tag[2], 10) + 1);
+		}
+		pck.version = tag;
+	})
+	.to("package.json")
+	.slog("package.json updated")
+	.sh()
+	.exec("git add -A")
+	.done(function() {
+		this.exec('git commit -m "bump version ' + tag + '"');
+	})
+	.exec('git push origin master')
+	.done(function() {
+		this.exec('git tag ' + tag);
+	})
+	.exec("git push origin --tags")
+	.exec('npm publish')
+	.slog("bump done.")
+	.elog("bump fail.");
+})(args[0], args[1]);

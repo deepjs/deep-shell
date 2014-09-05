@@ -2,14 +2,14 @@
 /**
  * @author Gilles Coomans <gilles.coomans@gmail.com>
  */
-require("deep-shell");
-deep.sh().log("dpsh").pwd();
-deep.Promise.context.cwd = __dirname;
+deep = require("deep-shell");
+deep.context("cwd", __dirname);
+deep.sh.verbose = true;
 
 deep.sh.Protocol("sh");
 deep.fs.Protocol("fs");
 
-deep.sh.verbose = true;
+deep.sh().log("dpsh");
 
 var repl = require("repl")
 .start({

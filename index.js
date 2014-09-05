@@ -34,7 +34,7 @@ deep.sh = deep.sh = function(options) {
 	});
 	if (options.cwd)
 		handler.cd(options.cwd);
-	return handler.resolve();
+	return handler.resolve(deep.Promise.context.cwd);
 };
 
 var constructor = function(state, options) {
@@ -223,7 +223,7 @@ var proto = {
 	}
 };
 
-deep.sh.Chain = deep.compose.Classes(deep.Promise, constructor, proto);
+deep.sh.Chain = deep.Classes(deep.Promise, constructor, proto);
 
 deep.sh.Chain._aspects = {
 	constructor: constructor,
@@ -264,7 +264,6 @@ deep.sh.Protocol = function(name, options) {
 	});
 };
 
-module.exports = deep.sh.Chain;
 
 (function() {
 
@@ -314,7 +313,7 @@ module.exports = deep.sh.Chain;
 		}
 	};
 
-	deep.ssh.Chain = deep.compose.Classes(deep.Promise, constructor, deep.sh.Chain._aspects.proto, proto);
+	deep.ssh.Chain = deep.Classes(deep.Promise, constructor, deep.sh.Chain._aspects.proto, proto);
 
 	deep.ssh.Chain._aspects = {
 		constructor: constructor,
@@ -349,6 +348,9 @@ module.exports = deep.sh.Chain;
 	};
 
 })();
+
+module.exports = deep;
+
 /*
 deep.sh().rm("test1", true).mkdir("test1").cd("test1").delay(300).log("should be test1").pwd().elog();
 deep.sh().rm("test2", true).delay(100).mkdir("test2").cd("test2").log("should be test2").pwd().elog();
