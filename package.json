@@ -1,6 +1,6 @@
 {
  "name": "deep-shell",
- "version": "0.4.0",
+ "version": "0.4.1",
  "author": "Gilles Coomans <gilles.coomans@gmail.com>",
  "description": "deepjs promised based shell chain",
  "licenses": [
@@ -10,14 +10,18 @@
   }
  ],
  "bin": {
-  "dpsh": "./bin/dpsh"
+  "dpsh": "./bin/dpsh",
+  "bmpv": "./bin/bmpv"
  },
  "repository": {
   "type": "git",
   "url": "https://github.com/deepjs/deep-shell.git"
  },
  "dependencies": {
-  "deepjs": ">=0.13.1"
+  "deepjs": ">=0.13.1",
+  "deep-restful": "0.2.2",
+  "deep-views": ">=0.2.0",
+  "deep-node": ">=0.3.1"
  },
  "main": "./index.js"
 }
