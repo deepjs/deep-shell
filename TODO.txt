@@ -30,11 +30,3 @@ deep shell should first be used to do asynch shell call.
 So it should be the best deepjs friend in a console.
 
 
-
-
-todo : 
-
-add deep-mongo, deep-jquery/cheerio, deep-routes, deep-swig, deep-marked as dependencies
-and deep-restful/index for chain
-
-
