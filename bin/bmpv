@@ -12,7 +12,7 @@ deep.context("cwd", process.cwd());
 deep.sh.verbose = true;
 var args = process.argv.slice(2);
 
-(function(type, path) {
+(function(path, type) {
 	var tag;
 	return deep.fs(path)
 	.pwd()
