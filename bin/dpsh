@@ -3,7 +3,7 @@
  * @author Gilles Coomans <gilles.coomans@gmail.com>
  */
 deep = require("deep-shell");
-deep.context("cwd", __dirname);
+deep.context("cwd", process.cwd());
 deep.sh.verbose = true;
 
 deep.sh.Protocol("sh");

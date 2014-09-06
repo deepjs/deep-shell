@@ -8,7 +8,7 @@
  * npm publish
  */
 var deep = require("deep-shell"); // deep.sh + deep.fs + more
-deep.context("cwd", __dirname);
+deep.context("cwd", process.cwd());
 deep.sh.verbose = true;
 var args = process.argv.slice(2);
 
