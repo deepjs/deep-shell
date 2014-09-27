@@ -62,7 +62,7 @@ var args = process.argv.slice(2);
 		this.exec('git tag ' + tag);
 	})
 	.exec("git push origin --tags")
-	.exec('npm publish')
+	.exec("npm publish")
 	.slog("bump done.")
 	.elog("bump fail.");
 })(args[0], args[1]);
