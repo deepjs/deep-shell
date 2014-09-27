@@ -34,18 +34,23 @@ var args = process.argv.slice(2);
 	})
 	.to("package.json")
 	.slog("package.json updated")
-	.exists("bower.json")
 	.done(function(){
-		this.from("bower.json")
-		.done(function(bwr){
-			bwr.version = tag;
+		this.exists("bower.json")
+		.done(function(){
+			this.from("bower.json")
+			.done(function(bwr){
+				bwr.version = tag;
+			})
+			.to("bower.json")
+			.slog("bower.json updated");
 		})
-		.to("bower.json")
-		.slog("package.json updated");
-	})
-	.fail(function(e){
-		if(e.status == 404)
-			return true;
+		.fail(function(e){
+			if(e.status == 404)
+			{
+				console.log("bower.json is missing. skip.");
+				return true;
+			}
+		});
 	})
 	.sh()
 	.exec("git add -A")

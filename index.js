@@ -15,7 +15,7 @@ require("deep-jquery/lib/dom")("dom");
 require("deep-mongo");
 require("deep-swig/lib/nodejs");
 require("deep-marked");
-require("deep-marked/lib/clients/nodejs");
+require("deep-marked/lib/nodejs");
 require("deep-node/lib/chains/fs");
 require("deep-node/lib/chains/file");
 require("./lib/sh-chain");
